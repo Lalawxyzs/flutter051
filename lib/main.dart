@@ -44,6 +44,15 @@ class _AgendamentoEventoTela extends State<AgendamentoEventoTela> {
       'DJ': false,
     };
 
+    static const List<String> _tagDisponiveis = [
+      'Vegetariano',
+      'Sem Glúten',
+      'Sem Lactose',
+      'Vegano',
+    ];
+
+    static const List<String> _tagsPadrao = [];
+
 
   late DateTime _dataSelecionada;
   late TimeOfDay _horarioSelecionado;
@@ -51,6 +60,7 @@ class _AgendamentoEventoTela extends State<AgendamentoEventoTela> {
   late double _quantidadeConvidados;
   late Visibilidade _visibilidadeSelecionado;
   late Map<String, bool> _servicosSelecionados;
+  late List<String> _tagsSelecionados;
 
   @override
   void initState() {
@@ -66,6 +76,7 @@ class _AgendamentoEventoTela extends State<AgendamentoEventoTela> {
       _quantidadeConvidados = _convidadosPadrao;
       _visibilidadeSelecionado = _visibilidadePadrao;
       _servicosSelecionados = Map<String, bool>.from(_servicosPadrao);
+      _tagsSelecionadas = List<String>.from(_tagsPadrao);
     });
     print('[DEBUG] Formulário resetado para os valores padrão.');
   }
@@ -81,6 +92,7 @@ class _AgendamentoEventoTela extends State<AgendamentoEventoTela> {
     print('Estimativa de Convidados: ${_quantidadeConvidados.round()}');
     print('Visibilidade: $_visibilidadeSelecionado');
     print('Serviços Adicionais: $_servicosSelecionados');
+    print('Restrições Alimentares (Tags): $_tagsSelecionados');
     print('=============================');
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -282,9 +294,39 @@ class _AgendamentoEventoTela extends State<AgendamentoEventoTela> {
               }).toList(),
             ),
             const Divider(height: 32),
+
+            Text(
+              'Restrições Alimentares (Tags)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              children: _tagDisponiveis.map((tag) {
+                final estaSelecionado = _tagsSelecionados.contains(tag);
+                return FilterChip(
+                  label: Text(tag),
+                  selected: estaSelecionado,
+                  onSelected: (bool selecionado) {
+                    setState(() {
+                      if (selecionado) {
+                        _tagsSelecionados.add(tag);
+                      } else {
+                        _tagsSelecionados.remove(tag);
+                      }
+                    });
+                    print(
+                      '[DEBUG - Chip] Tag "$tag" ${selecionado ? "adicionada" : "removida"}. Lista atual: $_tagsSelecionados',
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            const Divider(height: 32),
+
           ],
-        )
-      )
+        ),
+      ),
     );
   }
 }
